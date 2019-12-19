@@ -1,0 +1,1 @@
+swig -java -package com.dexcomin.ecjpake -outdir /Users/eliharris/Documents/ECJPAKE\ Android/app/src/main/java/com/dexcomin/ecjpake -o /Users/eliharris/Documents/ECJPAKE\ Android/app/src/main/cpp/ec-jpake/wrap.c /Users/eliharris/Documents/ECJPAKE\ Android/app/src/main/cpp/swig.i

@@ -1,0 +1,19 @@
+# ninja log v5
+0	54	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/sha256_.c.o	d5a14f0d99b72808
+0	202	0	CMakeFiles/ecjpake.dir/src/main/cpp/micro-ecc/uECC.c.o	32a8de90fc139d6e
+1	56	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/pointCalc.c.o	65bdffe2f6b3d9d8
+1	69	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/ec-jpake.c.o	8eb4c0b97c91114e
+0	44	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/wrap.c.o	de143542b02801b3
+1	43	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+0	39	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+39	64	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so	716825a8d4d16056
+1	48	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+48	73	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so	716825a8d4d16056
+1	38	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+38	63	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so	716825a8d4d16056
+0	38	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+38	63	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so	716825a8d4d16056
+1	179	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+179	229	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so	716825a8d4d16056
+0	72	0	CMakeFiles/ecjpake.dir/src/main/cpp/ec-jpake/speke_java.c.o	85dbeecde65956df
+72	124	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so	716825a8d4d16056

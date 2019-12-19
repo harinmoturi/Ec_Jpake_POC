@@ -1,0 +1,3 @@
+/Users/eh0819/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/x86/CMakeFiles/edit_cache.dir
+/Users/eh0819/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/x86/CMakeFiles/rebuild_cache.dir
+/Users/eh0819/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/x86/CMakeFiles/ecjpake.dir

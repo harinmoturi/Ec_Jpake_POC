@@ -1,0 +1,28 @@
+
+{
+	"buildFiles" : [ "/Users/eliharris/Documents/ECJPAKE Android/app/CMakeLists.txt" ],
+	"cleanCommands" : 
+	[
+		"/Users/eliharris/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/eliharris/Documents/ECJPAKE\\ Android/app/.externalNativeBuild/cmake/debug/x86_64 --target clean"
+	],
+	"libraries" : 
+	{
+		"ecjpake-Debug-x86_64" : 
+		{
+			"abi" : "x86_64",
+			"artifactName" : "ecjpake",
+			"buildCommand" : "/Users/eliharris/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/eliharris/Documents/ECJPAKE\\ Android/app/.externalNativeBuild/cmake/debug/x86_64 --target ecjpake",
+			"buildType" : "debug",
+			"output" : "/Users/eliharris/Documents/ECJPAKE Android/app/build/intermediates/cmake/debug/obj/x86_64/libecjpake.so",
+			"toolchain" : "12858805497870808664"
+		}
+	},
+	"toolchains" : 
+	{
+		"12858805497870808664" : 
+		{
+			"cCompilerExecutable" : "/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}

@@ -1,0 +1,68 @@
+
+{
+	"buildFiles" : [ "/Users/eliharris/Documents/ECJPAKE Android/app/CMakeLists.txt" ],
+	"cFileExtensions" : [ "c" ],
+	"cleanCommands" : 
+	[
+		"/Users/eliharris/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/eliharris/Documents/ECJPAKE\\ Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a --target clean"
+	],
+	"libraries" : 
+	{
+		"ecjpake-Debug-armeabi-v7a" : 
+		{
+			"abi" : "armeabi-v7a",
+			"artifactName" : "ecjpake",
+			"buildCommand" : "/Users/eliharris/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/eliharris/Documents/ECJPAKE\\ Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a --target ecjpake",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi26 --gcc-toolchain=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Decjpake_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/eliharris/Documents/ECJPAKE Android/app/src/main/cpp/ec-jpake/ec-jpake.c",
+					"workingDirectory" : "/Users/eliharris/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a"
+				},
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi26 --gcc-toolchain=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Decjpake_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/eliharris/Documents/ECJPAKE Android/app/src/main/cpp/ec-jpake/pointCalc.c",
+					"workingDirectory" : "/Users/eliharris/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a"
+				},
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi26 --gcc-toolchain=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Decjpake_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/eliharris/Documents/ECJPAKE Android/app/src/main/cpp/ec-jpake/sha256_.c",
+					"workingDirectory" : "/Users/eliharris/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a"
+				},
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi26 --gcc-toolchain=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Decjpake_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/eliharris/Documents/ECJPAKE Android/app/src/main/cpp/micro-ecc/uECC.c",
+					"workingDirectory" : "/Users/eliharris/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a"
+				},
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi26 --gcc-toolchain=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Decjpake_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/eliharris/Documents/ECJPAKE Android/app/src/main/cpp/ec-jpake/wrap.c",
+					"workingDirectory" : "/Users/eliharris/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a"
+				},
+				
+				{
+					"flags" : "  --target=armv7-none-linux-androideabi26 --gcc-toolchain=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Decjpake_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"src" : "/Users/eliharris/Documents/ECJPAKE Android/app/src/main/cpp/ec-jpake/speke_java.c",
+					"workingDirectory" : "/Users/eliharris/Documents/ECJPAKE Android/app/.externalNativeBuild/cmake/debug/armeabi-v7a"
+				}
+			],
+			"output" : "/Users/eliharris/Documents/ECJPAKE Android/app/build/intermediates/cmake/debug/obj/armeabi-v7a/libecjpake.so",
+			"toolchain" : "12858805497870808664"
+		}
+	},
+	"toolchains" : 
+	{
+		"12858805497870808664" : 
+		{
+			"cCompilerExecutable" : "/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/eliharris/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}
