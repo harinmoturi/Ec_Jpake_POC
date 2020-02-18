@@ -4,8 +4,8 @@
 # define FIX_TEST_VALUES 1
 
 
-#include "ec-jpake.h"
 #include <stdlib.h>
+#include "ec-jpake.h"
 #include "sample.h"
 
 #include <android/log.h>
@@ -14,7 +14,7 @@
 struct __attribute__((packed)) {
     uint8_t opcode;
     uint8_t curve;
-    char signerID[MAX_SIGNER_SIZE];
+    uint8_t  signerID[MAX_SIGNER_SIZE];
 } client_hello;
 
 
@@ -176,7 +176,14 @@ char *sayHello(size_t *len) {
     void *data = malloc(sizeof(client_hello));
 
     client_hello.opcode = 0x0A;
-    strcpy(client_hello.signerID, "OurSignerID");
+
+
+    //A/ temp challenge
+    uint8_t temp_challenge[] =  {0,1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15};
+
+    //A/strcpy(client_hello.signerID, "OurSignerID");
+    memcpy(client_hello.signerID,  temp_challenge, 16);
+
     client_hello.curve = secp256r1;
 
     memcpy(data, &client_hello, sizeof(client_hello));
