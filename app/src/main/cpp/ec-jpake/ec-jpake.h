@@ -57,6 +57,7 @@ typedef struct {
 #define BUFFER_MAX_SIZE (2 * (2 * uECC_WORD_SIZE * uECC_MAX_WORDS + 2 * uECC_WORD_SIZE * uECC_MAX_WORDS + uECC_WORD_SIZE * (uECC_MAX_WORDS + 1)))
 typedef uint8_t BUFFER_MSG;
 
+
 typedef union _dbuffer
 {
 	struct
@@ -70,12 +71,46 @@ typedef union _dbuffer
 		BUFFER_MSG buffer[BUFFER_MAX_SIZE>>1];
 		eccPoint key;
 	}round2;
+
 }_dbuffer;
 
+typedef struct {
+	uECC_word_t X[2 * MAX_KEY_SIZE];
+} ecjpake_point_t;
+
+
+typedef struct
+{
+	size_t size;
+		struct
+		{
+			uint8_t buffer[BUFFER_MAX_SIZE];
+			size_t size;
+		} round1;
+		struct
+		{
+			//uint8_t buffer[BUFFER_MAX_SIZE >> 1];
+			//ecjpake_point_t key;
+			uint8_t buffer[BUFFER_MAX_SIZE];
+			size_t size;
+		} round2;
+		struct
+		{
+			uint8_t buffer[BUFFER_MAX_SIZE >> 1];
+			ecjpake_point_t key;
+			size_t size;
+		} round3;
+
+} ecjpake_buffer_t __attribute__((aligned(4)));
+
+typedef struct {
+	uECC_word_t ephmKey[16];    //2 * MAX_KEY_SIZE];
+	uECC_word_t r[8]; //MAX_KEY_SIZE];
+} ecjpake_ZKPPack_t;
 
 extern const struct uECC_Curve_t* curve __attribute__ ((aligned(4)));
 
-void hashPack(uECC_word_t* out, eccPoint* toProve, eccPoint* basePoint, ZKPPack* pack);
+void hashPack(uECC_word_t* out, eccPoint* toProve, eccPoint* basePoint, ZKPPack* pack, char* curr_sign);
 
 int ECjpakeSetup(CURVE_TYPE c_type, ECC_ROLE role, const uint8_t* sharedSecret, size_t passLen);
 
@@ -97,12 +132,18 @@ int RoundTwo(eccPoint* x1, eccPoint* x3, eccPoint* x4, uECC_word_t* p2, eccPoint
 
 void materialKeyGen(eccPoint* x4, eccPoint* B, uECC_word_t* p2, eccPoint* keyK);
 
-int writeRoundOne(void* buffer);
+unsigned _store_data(uint8_t *dst, const uECC_word_t *words, uint32_t bytes);
+
+int writeRoundOne_Two(void* buffer, int Round_number);
 
 int writeRoundOneWith(uECC_word_t* p1, uECC_word_t* p2, void* buffer);
 
-int readRoundOne(void* buffer);
+int readRoundOne(void* buffer, int Round_Number);
 
 int writeRoundTwo(void* buffer);
 
-int readRoundTwo(void* buffer);
+int readRoundThree(void* buffer);
+
+int writePoint(uECC_word_t* point, uint8_t** buffer);
+
+int readScalar(uECC_word_t* mpi, uint8_t** buffer);

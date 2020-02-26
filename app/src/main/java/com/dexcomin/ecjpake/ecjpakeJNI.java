@@ -9,10 +9,10 @@
 package com.dexcomin.ecjpake;
 
 public class ecjpakeJNI {
-  public final static native byte[] writeRoundOneJ();
+  public final static native byte[] writeRoundOneJ(int Round_Number);
   public final static native byte[] writeRoundTwoJ();
   public final static native byte[] getKey();
-  public final static native void readRoundOneJ(byte[] jarg1);
+  public final static native int readRoundOneJ(byte[] jarg1,int size, int Round_Number);
   public final static native void readRoundTwoJ(byte[] jarg1);
   public final static native void setInfo(byte[] jarg1);
   public final static native byte[] sayHello();

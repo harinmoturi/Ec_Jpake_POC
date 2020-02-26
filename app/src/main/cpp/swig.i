@@ -41,13 +41,13 @@ $2 = JCALL1(GetArrayLength, jenv, $input);
 
 #include "ec-jpake.h"
 
-extern char * writeRoundOneJ(size_t * len);
+extern char * writeRoundOneJ(size_t * len, int Round_number);
 
 extern char * writeRoundTwoJ(size_t * len);
 
 extern char * getKey(size_t *len);
 
-extern void readRoundOneJ(const signed char * round, size_t sz);
+extern int readRoundOneJ(const signed char * round, size_t sz, int Round_number);
 
 extern void readRoundTwoJ(const signed char * round, size_t sz);
 

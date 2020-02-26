@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompatSideChannelService;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
@@ -37,8 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static Semaphore writeSem = new Semaphore(0);
 
-    ArrayList<Byte> received = new ArrayList<Byte>();
+    //public static Semaphore StartWriteRound = new Semaphore(0);
+
     short receivedRoundSize = 0;
+    ArrayList<Byte> received = new  ArrayList<Byte>();
+
+    short Round_1_2_Size = 160;
+    ArrayList<Byte> received_Round_1_2 = new ArrayList<Byte>(Round_1_2_Size);//new  ArrayList<Byte>();
+
 
     enum EXCHANGE {
         SERVER_HELLO,
@@ -50,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
         RECEIVE_ROUND_ONE,
         RECEIVE_ROUND_TWO,
+        RECEIVE_ROUND_THREE,
+
+        READY_TO_START_ROUND,
+        RECEIVED_ROUND_AND_NOT_FINISH_WRITING,
+        FINISH_WRITING_AND_NOT_RECEIVED_YET,
 
         RECEIVE_ROUND_ONE_RESPONSE,
         READ_FOR_AUTH
@@ -109,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
                 BluetoothDevice deviceToConnect = result.getDevice();
 
-                if (deviceToConnect.getName() != null && deviceToConnect.getName().contains("DexcomA4")) {
+                if (deviceToConnect.getName() != null && deviceToConnect.getName().contains("DexcomA2")) {
 
                     mScanner.stopScan(this);
 
@@ -156,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
                                                     for (final BluetoothGattDescriptor desc : charcacteristic.getDescriptors()) {
 
 
-                                                        desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                                   //     desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                                                        desc.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
 
                                                         if (gatt.writeDescriptor(desc)) {
                                                             try {
@@ -170,16 +183,22 @@ public class MainActivity extends AppCompatActivity {
 
                                                     }
 
-                                                    gatt.setCharacteristicNotification(charcacteristic, true);
+                                                  //A/
+                                                     gatt.setCharacteristicNotification(charcacteristic, true);
+
+
 
                                                 }
 
                                                 /* Subscribe to Exchange Characteristic */
-                                                if (charcacteristic.getUuid().toString().equals("f8083536-849e-531c-c594-30f1f86a4ea5")) {
+                                                     if (charcacteristic.getUuid().toString().equals("f8083538-849e-531c-c594-30f1f86a4ea5")) {  //A/
+
+                                                //   if (charcacteristic.getUuid().toString().equals("f8083536-849e-531c-c594-30f1f86a4ea5")) {  //A/
 
                                                     for (BluetoothGattDescriptor desc : charcacteristic.getDescriptors()) {
 
                                                         desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+
                                                         if (gatt.writeDescriptor(desc)) {
                                                             try {
                                                                 sem.acquire();
@@ -218,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-
+                            System.out.println("onCharacteristicWrite");
                             super.onCharacteristicWrite(gatt, characteristic, status);
 
                             System.out.println(authChar.getWriteType());
@@ -226,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                                 writeSem.release();
 
                         }
+
 
                         /**
                          * We need to latch into when the descriptor writes so we
@@ -247,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
 
+                          //  System.out.println("onCharacteristicChanged");
                             super.onCharacteristicChanged(gatt, characteristic);
 
 
@@ -254,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
 
                             switch (currentSyate) {
                                 case READ_FOR_AUTH:
+                                    System.out.println("Case READ_FOR_AUTH:");
                                     received = new ArrayList<>();
                                     for (int i = 1; i < characteristic.getValue().length; i++) {
                                         received.add(characteristic.getValue()[i]);
@@ -261,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
                                     sem.release();
                                     break;
                                 case SERVER_HELLO:
+                                    System.out.println("case SERVER_HELLO:");
                                     if (characteristic.getValue()[0] == 0x0B) {
                                         for (int i = 1; i < characteristic.getValue().length; i++) {
                                             received.add(characteristic.getValue()[i]);
@@ -271,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                                     break;
 
                                 case WRITE_ROUND_ONE_RESPONSE:
-
+                                    System.out.println("case WRITE_ROUND_ONE_RESPONSE:");
                                     received = new ArrayList<Byte>();
                                     for (int i = 1; i < characteristic.getValue().length; i++) {
                                         received.add(characteristic.getValue()[i]);
@@ -284,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                                     break;
 
                                 case WRITE_ROUND_TWO_RESPONSE:
-
+                                    System.out.println("case WRITE_ROUND_TWO_RESPONSE:");
                                     received = new ArrayList<Byte>();
                                     for (int i = 1; i < characteristic.getValue().length; i++) {
                                         received.add(characteristic.getValue()[i]);
@@ -298,41 +321,47 @@ public class MainActivity extends AppCompatActivity {
 
                                 case RECEIVE_ROUND_ONE:
                                 case RECEIVE_ROUND_TWO:
+                                case FINISH_WRITING_AND_NOT_RECEIVED_YET:
+                                case READY_TO_START_ROUND:
+                                   // System.out.println("case RECEIVE_ROUND_ONE:/  case RECEIVE_ROUND_TWO:");
 
-
-                                    if (characteristic.getValue()[0] == 0x00) {
-
-                                        // Now we are going to parse the payload size
-                                        byte[] size = new byte[]{characteristic.getValue()[1], characteristic.getValue()[2]};
-                                        ByteBuffer wrapped = ByteBuffer.wrap(size); // big-endian by default
-                                        receivedRoundSize = wrapped.getShort();
-
-                                        // Case to a short
-                                        receivedRoundSize = (short) (receivedRoundSize + 2);
-
-                                        // Now we are going to set its initial capacity
-                                        received = new ArrayList<Byte>(receivedRoundSize);
-
-                                        System.out.println("We got the round size!!");
+                                    if(characteristic.getValue().length == 1) {
+                                        //StartWriteRound.release();
+                                        System.out.println("Received 0x00");
+                                        break;
                                     }
 
-                                    for (int i = 1; i < characteristic.getValue().length; i++) {
-                                        received.add(characteristic.getValue()[i]);
+                                    for (int i = 0; i < characteristic.getValue().length; i++) {
+                                    received_Round_1_2.add(characteristic.getValue()[i]);
                                     }
 
                                     // Check to see if we got all the data
-                                    if (received.size() == receivedRoundSize) {
+                                  if (received_Round_1_2.size() == Round_1_2_Size) {
 
-                                        System.out.println("We got the round size!!");
+                                      System.out.println("We got the entire round!!");
 
-                                        sem.release();
+                                      received = new ArrayList<Byte>(Round_1_2_Size);
+                                      for (int j = 0; j < Round_1_2_Size; j++) {
+                                         received.add(received_Round_1_2.get(j));
+                                      }
+                                       received_Round_1_2.clear();
 
+                                      System.out.println("currentSyate is:" + currentSyate );
+                                      sem.release();
 
                                     }
+                                /*    else
+                                  {
+                                  System.out.println("received.size() = " +  received_Round_1_2.size());
+                                    System.out.println("receivedRoundSize = " + Round_1_2_Size);
 
+
+                                  }*/
                                     break;
 
+
                                 default:
+                                    System.out.println("case: default:");
                                     break;
                             }
 
@@ -383,89 +412,89 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-
-            this.currentSyate = EXCHANGE.SERVER_HELLO;
-
+            //this.currentSyate = EXCHANGE.SERVER_HELLO;
+            currentSyate = EXCHANGE.READY_TO_START_ROUND;
             Instant start = Instant.now();
-//            this.status.setText("Initiating...");
+//          this.status.setText("Initiating...");
 
-            // Let's setup
             ecjpake.init();
 
             // Let's get our hello data back :)
-            byte[] helloData = ecjpake.sayHello();
-
-            System.out.println("Client Hello:");
+            byte[] helloData = {0x0A, 0}; //ecjpake.sayHello();
             System.out.println(bytesToHex(helloData));
-
             authChar.setValue(helloData);
             authChar.setWriteType(0x02);
             gatt.writeCharacteristic(authChar);
 
-            // Let's wait until we have written since we need a response
+            System.out.println("1st Client Hello:");
             writeSem.acquire();
-
-            //We will now wait for the TX to ack back that it received the first round
             sem.acquire();
 
+            byte[] data = ecjpake.writeRoundOneJ(1);
+            authChar.setWriteType(0x01);
+            List<byte[]> roundOneChopped = divideArray(data, 20);
+            write(gatt, roundOneChopped, (byte) 0x00);
+            System.out.println("Round 1 Sent");
 
-            // Now we are going to set the info
             Byte[] myArray = new Byte[received.size()];
             received.toArray(myArray);
-            ecjpake.setInfo(toPrimitives(myArray));
+            ecjpake.readRoundOneJ(toPrimitives(myArray), 1);
 
-            currentSyate = EXCHANGE.RECEIVE_ROUND_ONE;
+           // currentSyate = EXCHANGE.READY_TO_START_ROUND;
 
-            // Now we are going to write the first round
-            byte[] data = ecjpake.writeRoundOneJ();
-            authChar.setWriteType(0x01);
-            List<byte[]> roundOneChopped = divideArray(data, 19);
-            write(gatt, roundOneChopped, (byte) 0x00);
-
-
-            // Wait for the response and then wait for the receiver to send the rest
-            sem.acquire();
-
-            myArray = new Byte[received.size()];
-            received.toArray(myArray);
-            ecjpake.readRoundOneJ(toPrimitives(myArray));
-
-
-            authChar.setValue(new byte[]{0x0C, 0x01});
+            byte[] helloData_2 = {0x0A, 0x01}; //ecjpake.sayHello();
+            System.out.println(bytesToHex(helloData_2));
+            authChar.setValue(helloData_2);
             authChar.setWriteType(0x02);
             gatt.writeCharacteristic(authChar);
 
-            // Let's wait until we have written since we need a response
+            System.out.println("2nd Client Hello:");
             writeSem.acquire();
-
-
-            currentSyate = EXCHANGE.RECEIVE_ROUND_TWO;
-
-            byte[] roundTwo = ecjpake.writeRoundTwoJ();
-            authChar.setWriteType(0x01);
-            List<byte[]> roundTwoChopped = divideArray(roundTwo, 19);
-            write(gatt, roundTwoChopped, (byte) 0x00);
-
-
-            // Wait for the response and then wait for the receiver to send the rest
             sem.acquire();
+
+            System.out.println("EC-JPAKE-4");
+            byte[] roundTwo = ecjpake.writeRoundOneJ(2);
+            authChar.setWriteType(0x01);
+            List<byte[]> roundTwoChopped = divideArray(roundTwo, 20);
+            write(gatt, roundTwoChopped, (byte) 0x00);
+            System.out.println(" Round 2 Sent");
+
+
+            myArray = new Byte[received.size()];
+            received.toArray(myArray);
+            ecjpake.readRoundOneJ(toPrimitives(myArray), 2);
+
+            //currentSyate = EXCHANGE.READY_TO_START_ROUND;
+
+            byte[] helloData_3 = {0x0A, 0x02}; //ecjpake.sayHello();
+            System.out.println(bytesToHex(helloData_3));
+            authChar.setValue(helloData_3);
+            authChar.setWriteType(0x02);
+            gatt.writeCharacteristic(authChar);
+            System.out.println("3er Client Hello:");
+
+             writeSem.acquire();
+             sem.acquire();
+
+            byte[] roundThree = ecjpake.writeRoundTwoJ();
+            authChar.setWriteType(0x01);
+            List<byte[]> roundThreeChopped = divideArray(roundThree, 20);
+            write(gatt, roundThreeChopped, (byte) 0x00);
+            System.out.println(" Round 3 Sent");
+
 
             myArray = new Byte[received.size()];
             received.toArray(myArray);
             ecjpake.readRoundTwoJ(toPrimitives(myArray));
 
+
             byte[] key = ecjpake.getKey();
 
             Instant finish = Instant.now();
-
             long timeElapsed = Duration.between(start, finish).toMillis();  //in millis
-
-            System.out.println("It took: " + timeElapsed);
-
+            System.out.println("It took: " + timeElapsed + " ms");
             System.out.println("HERE IS THE KEY " + bytesToHex(key));
-
             System.out.println(bytesToHex(key));
-
             currentSyate = EXCHANGE.READ_FOR_AUTH;
 
             doAuthentication(key, gatt, start);
@@ -478,8 +507,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void doAuthentication(byte[] key, BluetoothGatt gatt, Instant start) throws InterruptedException {
 
+        System.out.println("doAuthentication");
 
-        byte[] challengeFromDisplay = new byte[]{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02};
+        byte[] challengeFromDisplay = new byte[]{0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 
         byte[] hashValue = new byte[16];
 
@@ -492,6 +522,7 @@ public class MainActivity extends AppCompatActivity {
 
         byte[] encryptedHash = AES.encrypt(hashValue, key);
 
+        System.out.println("Encrypted hash:");
         System.out.println(bytesToHex(encryptedHash));
 
         authChar.setWriteType(0x02);
@@ -538,20 +569,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void write(BluetoothGatt gatt, List<byte[]> roundOneChopped, byte phaseHeader) throws InterruptedException {
 
-
+        System.out.println("Sending Round");
         for (int i = 0; i < roundOneChopped.size(); i++) {
 
 
-            byte[] valueToWrite = new byte[roundOneChopped.get(i).length + 1];
-            valueToWrite[0] = phaseHeader;
+            byte[] valueToWrite = new byte[roundOneChopped.get(i).length ];
+           // valueToWrite[0] = phaseHeader;
 
-            for (int e = 1; e < valueToWrite.length; e++) {
-                valueToWrite[e] = roundOneChopped.get(i)[e - 1];
+            for (int e = 0; e < valueToWrite.length; e++) {
+                valueToWrite[e] = roundOneChopped.get(i)[e];
             }
+
 
             authChar.setValue(valueToWrite);
             gatt.writeCharacteristic(authChar);
-            phaseHeader = (byte) (phaseHeader + 1);
+
+
+            System.out.println("Sending: "+ bytesToHex(valueToWrite));
+
+            //  phaseHeader = (byte) (phaseHeader + 1);
 
             writeSem.acquire();
         }

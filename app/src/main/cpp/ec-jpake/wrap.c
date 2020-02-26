@@ -211,13 +211,13 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 
 #include "ec-jpake.h"
 
-extern char * writeRoundOneJ(size_t * len);
+extern char * writeRoundOneJ(size_t * len, int Round_Number);
 
 extern char * writeRoundTwoJ(size_t * len);
 
 extern char * getKey(size_t *len);
 
-extern void readRoundOneJ(const signed char * round, size_t sz);
+extern int readRoundOneJ(const signed char * round, size_t sz, int Round_number);
 
 extern void readRoundTwoJ(const signed char * round, size_t sz);
 
@@ -228,21 +228,21 @@ extern char *sayHello(size_t *len);
 extern void init();
 
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-SWIGEXPORT jbyteArray JNICALL Java_com_dexcomin_ecjpake_ecjpakeJNI_writeRoundOneJ(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jbyteArray JNICALL Java_com_dexcomin_ecjpake_ecjpakeJNI_writeRoundOneJ(JNIEnv *jenv, jclass jcls, int arg_2) {
   jbyteArray jresult = 0 ;
   size_t *arg1 = (size_t *) 0 ;
   char *result = 0 ;
+
   
   (void)jenv;
   (void)jcls;
   size_t length=0;
   arg1 = &length;
-  result = (char *)writeRoundOneJ(arg1);
+  result = (char *)writeRoundOneJ(arg1, arg_2);
   {
     jresult = (*jenv)->NewByteArray(jenv, length);
     (*jenv)->SetByteArrayRegion(jenv, jresult, 0, length, result);
@@ -287,21 +287,22 @@ SWIGEXPORT jbyteArray JNICALL Java_com_dexcomin_ecjpake_ecjpakeJNI_getKey(JNIEnv
 }
 
 
-SWIGEXPORT void JNICALL Java_com_dexcomin_ecjpake_ecjpakeJNI_readRoundOneJ(JNIEnv *jenv, jclass jcls, jbyteArray jarg1) {
+SWIGEXPORT int JNICALL Java_com_dexcomin_ecjpake_ecjpakeJNI_readRoundOneJ(JNIEnv *jenv, jclass jcls, jbyteArray jarg1, int arg2, int arg3) {
   signed char *arg1 = (signed char *) 0 ;
-  size_t arg2 ;
+  //size_t arg2 ;
   
   (void)jenv;
   (void)jcls;
   {
     arg1 = (*jenv)->GetByteArrayElements(jenv, jarg1, NULL);
-    arg2 = (*jenv)->GetArrayLength(jenv, jarg1);
+    //arg2 = (*jenv)->GetArrayLength(jenv, jarg1);
   }
-  readRoundOneJ((signed char const *)arg1,arg2);
+  int err = readRoundOneJ((signed char const *)arg1, (size_t) arg2,arg3 );
   {
     // Or use  0 instead of ABORT to keep changes if it was a copy
     (*jenv)->ReleaseByteArrayElements(jenv, jarg1, arg1, JNI_ABORT);
   }
+  return err;
 }
 
 

@@ -9,11 +9,13 @@
 package com.dexcomin.ecjpake;
 
 public class ecjpake {
-  public static byte[] writeRoundOneJ() {
-        return ecjpakeJNI.writeRoundOneJ();
+  public static byte[] writeRoundOneJ( int Round_Number) {
+      System.out.println("writeRound: "+ Round_Number);
+        return ecjpakeJNI.writeRoundOneJ(Round_Number);
 }
 
   public static byte[] writeRoundTwoJ() {
+      System.out.println("write Round: 3");
         return ecjpakeJNI.writeRoundTwoJ();
 }
 
@@ -21,12 +23,14 @@ public class ecjpake {
         return ecjpakeJNI.getKey();
 }
 
-  public static void readRoundOneJ(byte[] round) {
-    ecjpakeJNI.readRoundOneJ(round);
+  public static int readRoundOneJ(byte[] round, int Round_Number ) {
+      System.out.println("Read Round: "+ Round_Number);
+   return ecjpakeJNI.readRoundOneJ(round, round.length, Round_Number);
   }
 
   public static void readRoundTwoJ(byte[] round) {
-    ecjpakeJNI.readRoundTwoJ(round);
+      System.out.println("Read Round: 3");
+      ecjpakeJNI.readRoundTwoJ(round);
   }
 
   public static void setInfo(byte[] round) {

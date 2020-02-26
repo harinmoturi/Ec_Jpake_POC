@@ -1,7 +1,7 @@
 //
 // Created by Eli Harris on 2019-10-30.
 //
-# define FIX_TEST_VALUES 1
+# define FIX_TEST_VALUES 0
 
 
 #include <stdlib.h>
@@ -19,59 +19,51 @@ struct __attribute__((packed)) {
 
 
 // Define the buffer that is going to hold the information
-_dbuffer buff;
+//_dbuffer buff;
+ecjpake_buffer_t new_buff;
 
-char *writeRoundOneJ(size_t *len) {
+
+char *writeRoundOneJ(size_t *len, int Round_number) {
 
 
 #if FIX_TEST_VALUES
     uint32_t p1[MAX_KEY_SIZE], p2[MAX_KEY_SIZE];
-    uECC_vli_bytesToNative(p1, ecjpake_test_x3, 32);
-    uECC_vli_bytesToNative(p2, ecjpake_test_x4, 32);
+    uECC_vli_bytesToNative(p1, ecjpake_test_x1, 32);
+    uECC_vli_bytesToNative(p2, ecjpake_test_x1, 32);
     writeRoundOneWith(p1, p2, &buff);
 #else
-    writeRoundOne(&buff);
+    writeRoundOne_Two(&new_buff, Round_number);
 #endif
 
-    // Set the length
-    *len = buff.round1.size + 2;
 
-    // We are going to write the data into this
-    void *data = malloc(buff.round1.size + 2);
+    void *data;
 
-    void *sizePointer = (void *) &buff.round1.size;
+    if ((Round_number == 1) ||(Round_number == 5)) {
+        *len = new_buff.round1.size; //buff.round1.size; //A/ + 2;
+        data = malloc(new_buff.round1.size);
+        memcpy(data, new_buff.round1.buffer, new_buff.round1.size);}
+     else if (Round_number == 2) {
+        *len = new_buff.round2.size; //buff.round1.size; //A/ + 2;
+        data = malloc(new_buff.round2.size); //A/+ 2);
+        memcpy(data, new_buff.round2.buffer, new_buff.round2.size);}
 
-    // Now we are going to copy over the memory
-    memcpy(data, (sizePointer + 1), 1);
-    memcpy(data + 1, (sizePointer + 0), 1);
 
-    // Now we are going to copy over the buffer into the pointer
-    memcpy(data + 2, buff.round1.buffer, buff.round1.size);
-
-    // Now we are going to cast the data
     return (char *) data;
 
 }
 
-char *writeRoundTwoJ(size_t *len) {
+char* writeRoundTwoJ(size_t *len) {
 
-
-    writeRoundOne(&buff);
+   writeRoundTwo(&new_buff);
 
     // Set the length
-    *len = buff.round2.size + 2;
+    *len = new_buff.round3.size;
 
     // We are going to write the data into this
-    void *data = malloc(buff.round2.size + 2);
+    void *data = malloc(new_buff.round3.size);
 
-    void *sizePointer = (void *) &buff.round2.size;
 
-    // Now we are going to copy over the memory
-    memcpy(data, (sizePointer + 1), 1);
-    memcpy(data + 1, (sizePointer + 0), 1);
-
-    // Now we are going to copy over the buffer into the pointer
-    memcpy(data + 2, buff.round2.buffer, buff.round2.size);
+    memcpy(data, new_buff.round3.buffer, new_buff.round3.size);
 
     // Now we are going to cast the data
     return (char *) data;
@@ -85,7 +77,7 @@ char *getKey(size_t *len) {
     uint8_t key[32], in[32];
     SHA256_CTX ctx;
     sha256_init(&ctx);
-    uECC_vli_nativeToBytes(in, curve->num_bytes, (uint32_t *) & buff.round2.key);
+    uECC_vli_nativeToBytes(in, curve->num_bytes, (uint32_t *) & new_buff.round3.key);
     memset(in + curve->num_bytes, 0, 32 - curve->num_bytes);
     sha256_update(&ctx, in, 32);
     sha256_final(&ctx, key);
@@ -99,19 +91,24 @@ char *getKey(size_t *len) {
 
 }
 
-void readRoundOneJ(const signed char *round, size_t sz) {
+int readRoundOneJ(const signed char *round, size_t sz, int Round_number) {
 
-    buff.round1.size = 0;
+    printf("readRoundOneJ\n");
 
-    uint16_t size = 0;
 
-    void *sizePointer = (void *) &buff.round1.size;
+    if(Round_number == 1) {
+        new_buff.round1.size = sz;
+        memcpy(new_buff.round1.buffer, round,sz);
+    }
+    else if((Round_number == 2)||(Round_number == 5)){
+        new_buff.round2.size = sz;
+        memcpy(new_buff.round2.buffer, round,sz);
+    }
 
-    memcpy(sizePointer, round + 1, 1);
-    memcpy(sizePointer + 1, round, 1);
-    memcpy(buff.round1.buffer, round + 2, buff.round1.size);
 
-    int err = readRoundOne(&buff);
+    int err = readRoundOne(&new_buff, Round_number);
+
+    printf("err = %d\n", err);
 
     if (!err) {
         printf("Checked!\n");
@@ -126,26 +123,22 @@ void readRoundOneJ(const signed char *round, size_t sz) {
     } else if (err == -2) {
         printf("Size error.\n");
 
-        __android_log_write(ANDROID_LOG_ERROR, "Tag", "Could not be verified");//Or ANDROID_LOG_INFO, ...
+        __android_log_write(ANDROID_LOG_ERROR, "Tag", " not be verified");//Or ANDROID_LOG_INFO, ...
 
     }
 
+    return err;
 }
 
 
 void readRoundTwoJ(const signed char *round, size_t sz) {
 
-    buff.round2.size = 0;
+    printf("readRoundTwoJ\n");
 
-    uint16_t size = 0;
+    new_buff.round3.size = sz;
+    memcpy(new_buff.round3.buffer, round,sz);
 
-    void *sizePointer = (void *) &buff.round2.size;
-
-    memcpy(sizePointer, round + 1, 1);
-    memcpy(sizePointer + 1, round, 1);
-    memcpy(buff.round2.buffer, round + 2, buff.round2.size);
-
-    int err = readRoundTwo(&buff);
+    int err = readRoundThree(&new_buff);
 
     if (!err) {
         printf("Checked!\n");
@@ -195,25 +188,28 @@ char *sayHello(size_t *len) {
 
 void setInfo(const signed char *round, size_t sz) {
 
-    memcpy(&client_hello, (void *) round, sz);
+    //memcpy(&client_hello, (void *) round, sz);
 
-    setSigns("OurSignerID", "OurSignerID");
+    setSigns("device","transmitter");
 
 }
 
 void init() {
 
     int err = 0;
-    err = ECjpakeSetup(secp256r1, ECJPAKE_SERVER, ecjpake_test_password, sizeof(ecjpake_test_password));
+    err = ECjpakeSetup(secp256r1, ECJPAKE_CLIENT, ecjpake_test_password, sizeof(ecjpake_test_password));
 
     if (err == -1) {
         printf("This curve is not supported.\n");
     }
 
-    char _mySign[] = "OurSignerID";
-    char _recSign[] = "OurSignerID";
+    //char _mySign[] = "OurSignerID";
+    //char _recSign[] = "OurSignerID";
 
-    setSigns("OurSignerID", "OurSignerID");
+    char _mySign[] = "device";
+    char _recSign[] = "transmitter";
+
+    setSigns(_mySign, _recSign);
 
 }
 
